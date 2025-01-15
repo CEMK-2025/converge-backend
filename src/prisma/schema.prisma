@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int             @id @default(autoincrement())
+  email          String          @unique
+  password       String
+  name           String
+  avatar         String?
+  status         String?
+  role           Role            @default(USER)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  activityLogs   ActivityLog[]
+  workspaceUsers WorkspaceUser[]
+  channels       Channel[]       @relation("ChannelMembers")
+  workspaces     Workspace[]     @relation("UserWorkspaces")
+}
+
+model Workspace {
+  id             Int             @id @default(autoincrement())
+  name           String          @unique
+  description    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  channels       Channel[]
+  workspaceUsers WorkspaceUser[]
+  users          User[]          @relation("UserWorkspaces")
+}
+
+model Channel {
+  id          Int       @id @default(autoincrement())
+  name        String
+  type        String    @default("public")
+  workspaceId Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  members     User[]    @relation("ChannelMembers")
+}
+
+model WorkspaceUser {
+  id          Int           @id @default(autoincrement())
+  userId      Int
+  workspaceId Int
+  role        WorkspaceRole @default(MEMBER)
+  user        User          @relation(fields: [userId], references: [id])
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
+
+  @@unique([userId, workspaceId])
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  action    String
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum WorkspaceRole {
+  ADMIN
+  MEMBER
+  GUEST
+}
