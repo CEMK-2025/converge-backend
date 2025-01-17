@@ -38,6 +38,13 @@ export const signup = async (req: Request, res: Response) => {
     // Generate JWT token
     const token = generateToken(newUser);
 
+    res.cookie("authToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
     res.status(201).json({
       message: "User created successfully",
       data: {
@@ -88,6 +95,13 @@ export const login = async (req: Request, res: Response) => {
     // Generate JWT token
     const token = generateToken(user);
 
+    res.cookie("authToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
     res.status(200).json({
       message: "Login successful",
       token,
@@ -110,5 +124,21 @@ export const login = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({ message: error.message });
     return;
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("authToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
+    });
+
+    res.status(200).json({
+      message: "Logged out successfully"
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 };
