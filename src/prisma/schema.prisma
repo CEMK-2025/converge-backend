@@ -20,6 +20,7 @@ model User {
   activityLogs   ActivityLog[]
   workspaceUsers WorkspaceUser[]
   channels       Channel[]       @relation("ChannelMembers")
+  channelUsers   ChannelUser[]
   workspaces     Workspace[]     @relation("UserWorkspaces")
 }
 
@@ -43,6 +44,7 @@ model Channel {
   updatedAt   DateTime  @updatedAt
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
   members     User[]    @relation("ChannelMembers")
+  channelUsers ChannelUser[]
 }
 
 model WorkspaceUser {
@@ -55,6 +57,19 @@ model WorkspaceUser {
 
   @@unique([userId, workspaceId])
 }
+
+model ChannelUser {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  channelId Int
+  role      WorkspaceRole @default(MEMBER)
+
+  user      User    @relation(fields: [userId], references: [id])
+  channel   Channel @relation(fields: [channelId], references: [id])
+
+  @@unique([userId, channelId])
+}
+
 
 model ActivityLog {
   id        Int      @id @default(autoincrement())
