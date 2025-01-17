@@ -4,8 +4,8 @@ import { authenticate } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-router.post('/workspaces/:workspaceId/channels', authenticate, createChannel);
+router.post('/:workspaceId/channels', authenticate, createChannel);
 
-router.post('/workspaces/:workspaceId/channels/:channelId/join', authenticate, joinChannel);
+router.post('/:workspaceId/channels/:channelId/join', authenticate, joinChannel);
 
 export default router;
