@@ -6,7 +6,7 @@ import { createUserSchema, loginUserSchema } from "../validators/authValidator";
 import { generateToken } from "../utils/authUtils";
 
 // Signup Controller
-export const signup = async (req: Request, res: Response): Promise<void> => {
+export const signup = async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
 
@@ -60,7 +60,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Login Controller
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
